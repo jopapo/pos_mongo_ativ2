@@ -79,13 +79,49 @@ ou...
 
 Para importar o arquivo _italian-people.js_ no docker foi necessário criar o volume no docker-compose e ao acessar a console do mongo executar:
 ```
-load('/mongo-seed/italian-people.js')
+> load('/mongo-seed/italian-people.js')
 ```
 
 1. Liste/Conte todas as pessoas que tem exatamente 99 anos. Você pode usar um count para indicar a quantidade.
+Usei um count da idade de 56 para provar que o resultado com 99 anos era de 0 registros.
+```
+> db.italians.count({age: 99})
+0
+> db.italians.count({age: 56})
+111
+```
+
 2. Identifique quantas pessoas são elegíveis atendimento prioritário (pessoas com mais de 65 anos)
+```
+> db.italians.count({age: {'$gt': 65}})
+1773
+```
+
 3. Identifique todos os jovens (pessoas entre 12 a 18 anos). 
+```
+> db.italians.count({age: {'$lte': 18, '$gte': 12}})
+842
+```
+
 4. Identifique quantas pessoas tem gatos, quantas tem cachorro e quantas não tem nenhum dos dois 
+6084 possuem gato:
+```
+> db.italians.count({cat:{$exists:true}})
+6084
+```
+
+4028 possuem cachorro:
+```
+> db.italians.count({dog:{$exists:true}})
+4028
+```
+
+2331 não possuem gato nem cachorro:
+```
+> db.italians.count({dog:{$exists:false},cat:{$exists:false}})
+2331
+```
+
 5. Liste/Conte todas as pessoas acima de 60 anos que tenham gato 
 6. Liste/Conte todos os jovens com cachorro 
 7. Utilizando o $where, liste todas as pessoas que tem gato e cachorro 
