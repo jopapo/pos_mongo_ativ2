@@ -4,3 +4,5 @@ version: "3.5"
 services:
   mongo-server:
     image: "mongo:latest"
+    volumes:
+      - ./mongo-seed:/mongo-seed
