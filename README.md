@@ -12,6 +12,7 @@ use a flag -d se quiser que rode em segundo plano.
 # docker exec -it pos_mongo_ativ2_mongo-server_1 mongo
 ```
 
+
 ## Exercício 1- Aquecendo com os pets 
 
 1. Adicione outro Peixe e um Hamster com nome Frodo 
@@ -74,6 +75,7 @@ ou...
 > db.pets.find({name:"Mike",species:"Cachorro"})
 { "_id" : ObjectId("5e88ea10da33d5899646ad23"), "name" : "Mike", "species" : "Cachorro" }
 ```
+
 
 ## Exercício 2 – Mama mia!
 
@@ -393,3 +395,22 @@ dos Inocentes (1991)", "rating" : 3.38 }, { "title" : "A Origem (2010)", "rating
 3.59 }, { "title" : "Guerra nas Estrelas (1977)", "rating" : 0.87 }, { "title" : "Coringa (2019)", "rating" : 1.45 } ], "cat" : { "name" : "Simona", "age" : 18 } }
 ...
 ```
+
+
+## Exercício 3 - Stockbrokers
+
+1. Liste as ações com profit acima de 0.5 (limite a 10 o resultado) 
+2. Liste as ações com perdas (limite a 10 novamente) 
+3. Liste as 10 ações mais rentáveis  
+4. Qual foi o setor mais rentável? 
+5. Ordene as ações pelo profit e usando um cursor, liste as ações. 
+6. Renomeie o campo “Profit Margin” para apenas “profit”. 
+7. Agora liste apenas a empresa e seu respectivo resultado 
+8. Analise as ações. É uma bola de cristal na sua mão... Quais as três ações você investiria? 
+9. Liste as ações agrupadas por setor
+
+
+## Exercício 4 – Fraude na Enron! 
+
+1. Liste as pessoas que enviaram e-mails (de forma distinta, ou seja, sem repetir). Quantas pessoas são? 
+2. Contabilize quantos e-mails tem a palavra “fraud”
