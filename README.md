@@ -399,15 +399,145 @@ dos Inocentes (1991)", "rating" : 3.38 }, { "title" : "A Origem (2010)", "rating
 
 ## Exercício 3 - Stockbrokers
 
+Para importar o arquivo _stocks.js_ foi executado o script abaixo.
+```
+$ docker exec -it pos_mongo_ativ2_mongo-server_1 //bin//sh
+# mongoimport --db stocks --collection stocks --file /mongo-seed/stock.json
+2020-04-05T20:39:09.163+0000    connected to: mongodb://localhost/
+2020-04-05T20:39:09.915+0000    6756 document(s) imported successfully. 0 document(s) failed to import.
+```
+
 1. Liste as ações com profit acima de 0.5 (limite a 10 o resultado) 
+```
+> db.stocks.find({'Profit Margin':{$gt:0.5}},{'Ticker':1,'Profit Margin':-1}).limit(10)
+{ "_id" : ObjectId("52853800bb1177ca391c180f"), "Ticker" : "AB", "Profit Margin" : 0.896 }
+{ "_id" : ObjectId("52853801bb1177ca391c1895"), "Ticker" : "AGNC", "Profit Margin" : 0.972 }
+{ "_id" : ObjectId("52853801bb1177ca391c1950"), "Ticker" : "ARCC", "Profit Margin" : 0.654 }
+{ "_id" : ObjectId("52853801bb1177ca391c195a"), "Ticker" : "ARI", "Profit Margin" : 0.576 }
+{ "_id" : ObjectId("52853801bb1177ca391c1968"), "Ticker" : "ARR", "Profit Margin" : 0.848 }
+{ "_id" : ObjectId("52853801bb1177ca391c1998"), "Ticker" : "ATHL", "Profit Margin" : 0.732 }
+{ "_id" : ObjectId("52853801bb1177ca391c19f6"), "Ticker" : "AYR", "Profit Margin" : 0.548 }
+{ "_id" : ObjectId("52853801bb1177ca391c1a97"), "Ticker" : "BK", "Profit Margin" : 0.63 }
+{ "_id" : ObjectId("52853801bb1177ca391c1abd"), "Ticker" : "BLX", "Profit Margin" : 0.588 }
+{ "_id" : ObjectId("52853801bb1177ca391c1af0"), "Ticker" : "BPO", "Profit Margin" : 0.503 }
+```
+
 2. Liste as ações com perdas (limite a 10 novamente) 
+```
+> db.stocks.find({'Profit Margin':{$lt:0.0}},{'Ticker':1,'Profit Margin':-1}).limit(10)
+{ "_id" : ObjectId("52853800bb1177ca391c1806"), "Ticker" : "AAOI", "Profit Margin" : -0.023 }
+{ "_id" : ObjectId("52853800bb1177ca391c180c"), "Ticker" : "AAV", "Profit Margin" : -0.232 }
+{ "_id" : ObjectId("52853800bb1177ca391c1815"), "Ticker" : "ABCD", "Profit Margin" : -0.645 }
+{ "_id" : ObjectId("52853800bb1177ca391c1817"), "Ticker" : "ABFS", "Profit Margin" : -0.005 }
+{ "_id" : ObjectId("52853800bb1177ca391c181b"), "Ticker" : "ABMC", "Profit Margin" : -0.0966 }
+{ "_id" : ObjectId("52853800bb1177ca391c1821"), "Ticker" : "ABX", "Profit Margin" : -0.769 }
+{ "_id" : ObjectId("52853800bb1177ca391c1826"), "Ticker" : "ACCL", "Profit Margin" : -0.014 }
+{ "_id" : ObjectId("52853800bb1177ca391c182b"), "Ticker" : "ACFC", "Profit Margin" : -0.18 }
+{ "_id" : ObjectId("52853800bb1177ca391c182f"), "Ticker" : "ACH", "Profit Margin" : -0.051 }
+{ "_id" : ObjectId("52853800bb1177ca391c1832"), "Ticker" : "ACI", "Profit Margin" : -0.173 }
+```
+
 3. Liste as 10 ações mais rentáveis  
+```
+> db.stocks.find({},{'Ticker':1,'Profit Margin':1}).sort({'Profit Margin':-1}).limit(10)
+{ "_id" : ObjectId("52853801bb1177ca391c1af3"), "Ticker" : "BPT", "Profit Margin" : 0.994 }
+{ "_id" : ObjectId("52853802bb1177ca391c1b69"), "Ticker" : "CACB", "Profit Margin" : 0.994 }
+{ "_id" : ObjectId("5285380bbb1177ca391c2c3c"), "Ticker" : "ROYT", "Profit Margin" : 0.99 }
+{ "_id" : ObjectId("52853808bb1177ca391c281b"), "Ticker" : "NDRO", "Profit Margin" : 0.986 }
+{ "_id" : ObjectId("5285380fbb1177ca391c318e"), "Ticker" : "WHZ", "Profit Margin" : 0.982 }
+{ "_id" : ObjectId("52853808bb1177ca391c27bd"), "Ticker" : "MVO", "Profit Margin" : 0.976 }
+{ "_id" : ObjectId("52853801bb1177ca391c1895"), "Ticker" : "AGNC", "Profit Margin" : 0.972 }
+{ "_id" : ObjectId("5285380ebb1177ca391c3101"), "Ticker" : "VOC", "Profit Margin" : 0.971 }
+{ "_id" : ObjectId("52853807bb1177ca391c279a"), "Ticker" : "MTR", "Profit Margin" : 0.97 }
+{ "_id" : ObjectId("52853809bb1177ca391c2946"), "Ticker" : "OLP", "Profit Margin" : 0.97 }
+```
+
 4. Qual foi o setor mais rentável? 
+```
+> db.stocks.aggregate([{$group:{_id:'$Sector', profit:{$avg:'$Profit Margin'}}},{$sort:{profit:-1}}])
+{ "_id" : "Financial", "profit" : 0.16467639311043566 }
+{ "_id" : "Utilities", "profit" : 0.06569026548672566 }
+{ "_id" : "Consumer Goods", "profit" : 0.03624657534246575 }
+{ "_id" : "Conglomerates", "profit" : 0.03486363636363637 }
+{ "_id" : "Industrial Goods", "profit" : 0.03170316091954023 }
+{ "_id" : "Services", "profit" : 0.024760843373493976 }
+{ "_id" : "Basic Materials", "profit" : -0.018308565737051793 }
+{ "_id" : "Technology", "profit" : -0.02344516129032258 }
+{ "_id" : "Healthcare", "profit" : -0.931430882352941 }
+```
+
 5. Ordene as ações pelo profit e usando um cursor, liste as ações. 
+```
+> var cur = db.stocks.find({},{'Ticker':1,'Profit Margin':1}).sort({'$Profit Margin':1})
+> cur.next()
+{
+        "_id" : ObjectId("52853800bb1177ca391c17ff"),
+        "Ticker" : "A",
+        "Profit Margin" : 0.137
+}
+> cur.next()
+{
+        "_id" : ObjectId("52853800bb1177ca391c1800"),
+        "Ticker" : "AA",
+        "Profit Margin" : 0.013
+}
+```
+
 6. Renomeie o campo “Profit Margin” para apenas “profit”. 
+```
+> db.stocks.updateMany({}, {$rename:{'Profit Margin':'profit'}})
+{ "acknowledged" : true, "matchedCount" : 6756, "modifiedCount" : 4302 }
+> db.stocks.find({},{'Profit Margin':1,'profit':1}).limit(1)
+{ "_id" : ObjectId("52853800bb1177ca391c17ff"), "profit" : 0.137 }
+```
+
 7. Agora liste apenas a empresa e seu respectivo resultado 
+```
+> db.stocks.find({},{'Company':1,'profit':1}).limit(10)
+{ "_id" : ObjectId("52853800bb1177ca391c17ff"), "Company" : "Agilent Technologies Inc.", "profit" : 0.137 }
+{ "_id" : ObjectId("52853800bb1177ca391c1800"), "Company" : "Alcoa, Inc.", "profit" : 0.013 }
+{ "_id" : ObjectId("52853800bb1177ca391c1801"), "Company" : "WCM/BNY Mellon Focused Growth ADR ETF" }
+{ "_id" : ObjectId("52853800bb1177ca391c1802"), "Company" : "iShares MSCI AC Asia Information Tech" }
+{ "_id" : ObjectId("52853800bb1177ca391c1803"), "Company" : "Altisource Asset Management Corporation" }
+{ "_id" : ObjectId("52853800bb1177ca391c1805"), "Company" : "Aaron's, Inc.", "profit" : 0.06 }
+{ "_id" : ObjectId("52853800bb1177ca391c1806"), "Company" : "Applied Optoelectronics, Inc.", "profit" : -0.023 }
+{ "_id" : ObjectId("52853800bb1177ca391c1807"), "Company" : "AAON Inc.", "profit" : 0.105 }
+{ "_id" : ObjectId("52853800bb1177ca391c1804"), "Company" : "Atlantic American Corp.", "profit" : 0.056 }
+{ "_id" : ObjectId("52853800bb1177ca391c1809"), "Company" : "Apple Inc.", "profit" : 0.217 }
+```
+
 8. Analise as ações. É uma bola de cristal na sua mão... Quais as três ações você investiria? 
+8.1. A de maior lucratividade no ano:
+```
+> db.stocks.find({},{'Company':1,'profit':1,'Performance (Year)':1,'Performance (Quarter)':1,'Performance (Week)':1,'Performance (YTD)':1,'Total Debt/Equity':1,_id:0}).sort({'Performance (Year)':-1}).limit(1)
+{ "Performance (YTD)" : 20.7857, "Performance (Week)" : -0.0469, "Performance (Quarter)" : 1.1786, "Company" : "Affirmative Insurance Holdings Inc.", "Performance (Year)" : 20.7857, "profit" : -0.6574 }
+```
+
+8.2. A de maior lucratividade atual:
+```
+> db.stocks.find({},{'Company':1,'profit':1,'Performance (Year)':1,'Performance (Quarter)':1,'Performance (Week)':1,'Performance (YTD)':1,'Total Debt/Equity':1,_id:0}).sort({'profit':-1}).limit(1)
+{ "Total Debt/Equity" : 0, "Performance (YTD)" : 0.2758, "Performance (Week)" : -0.018, "Performance (Quarter)" : -0.0556, "Company" : "BP Prudhoe Bay Royalty Trust", "Performance (Year)" : 0.1837, "profit" : 0.994 }
+```
+
+8.3. A com maior lucratividade anual e lucro atual (ignorando a _Affirmative Insurance Holdings Inc._):
+```
+> db.stocks.aggregate([{$group:{_id:'$Company', profit:{$sum:{$add:['$profit','$Performance (Year)']}}}},{$sort:{profit:-1}},{$limit:10}])
+{ "_id" : "Affirmative Insurance Holdings Inc.", "profit" : 20.1283 }
+{ "_id" : "Canadian Solar Inc.", "profit" : 11.1217 }
+```
+
 9. Liste as ações agrupadas por setor
+```
+> db.stocks.aggregate([{$group:{_id:'$Sector', stocks:{$addToSet:'$Ticker'}}},{$limit:2}])
+{ "_id" : "Healthcare", "stocks" : [ "ISR", "AKRX", "IPCM", "ONCY", "RELV", "HNSN", "CLSN", "THLD", "TRGT", "ADUS", "AMED", "SPHS", "ZLTQ", "STML", "CRTX", "PTCT", "AFFY", "CRDC", "OCRX", "ALXA",
+"APPA", "TARO", "NBS", "TNGN", "FATE", "GILD", "ACUR", "DGX", "ZGNX", "IMMY", "CRY", "MEIP", "CCXI", "HZNP", "SPEX", "RMTI", "FVE", "INSM", "CBM", "ALIM", "BABY", "VTUS", "RDY", "NAVB", "VSCI", "IMMU", "NVS", "HPTX", "PIP", "ANCI", "SPPI", "SRDX", "FLML", "LGND", "SSH", "SVA", "VCYT", "IDXX", "VASC", "WST", "EMIS", "OFIX", "PBMD", "REGN", "TXMD", "GNBT", "ARAY", "UNH", "HMA", "CELG", "JNJ", "NYMX", "STJ", "XRAY", "OHRP", "ONVO", "EXAC", "XOMA", "TNXP", "HTBX", "CMRX", "RPRX", "SIRO", "UTMD", "IMRS", "CYBX", "ESPR", "BRLI", "ANAC", "ITMN", "PTLA", "PBIO", "PRGO", "LCI", "DNDN", "VRX", "BKD", "ALXN", "AEZS", "ENZN", "FMI", "ISRG", "MGCD", "CNAT", "ANTH", "GENE", "AFAM", "Q", "DXR", "UTHR", "MRNA", "FOLD", "PETX", "HTWR", "PPHM", "HGR", "HSKA", "ACHN", "PBYI", "PMD", "CO", "SRNE", "ALR", "GHDX", "CHTP", "PRPH", "AVNR", "GALT", "SKH", "ADK", "ACT", "CCM", "ICEL", "NVO", "ACOR", "QCOR", "BAX", "UAM", "STE", "UNIS", "FPRX", "AMSG", "ULGX", "GNMK", "OVAS", "BAXS", "ENTA",
+"CYCC", "CUTR", "PRAN", "BONE", "ENZ", "VIVO", "BCRX", "POZN", "GSK", "RMD", "RNA", "HUM", "NVDQ", "INSY", "ABAX", "DYNT", "NXTM", "MSON", "MELA", "BCR", "PCYC", "ALSE", "CBPO", "SYN", "AERI", "TELK", "ANIK", "FONR", "TFX", "CBMX", "CRL", "HOLX", "ONTY", "SCMP", "TMO", "TGTX", "CFN", "EW", "BIOD", "ABMD", "APRI", "BOTA", "LFVN", "RGEN", "MTD", "RGDX", "ROCM", "IG", "APPY", "ENDP", "MGLN",
+"NUVA", "INCY", "VNDA", "MYRX", "PDEX", "SNN", "SNSS", "USMD", "SRPT", "BIOS", "ANGO", "MNK", "NDZ", "ABIO", "STEM", "NURO", "LXRX", "HALO", "HRT", "TSPT", "USPH", "IPXL", "VRML", "GENT", "IART",
+"HAE", "BSDM", "SGEN", "ELOS", "WLP", "CI", "GNVC", "CEMI", "MDVN", "AET", "FMS", "IVC", "HSP", "MDCO", "FCSC", "KPTI", "DXCM", "NBIX", "RNN", "SPAN", "VOLC", "BSPM", "MLAB", "DSCO", "PGNX", "CEMP", "ZTS", "NAII", "AMBI", "OMER", "CBST", "ATOS", "ASTM", "QDEL", "VSTM", "AMRN", "STSI", "LLY", "CPHI", "KOOL", "ARWR", "LPTN", "AIRM", "JAZZ", "WCG", "ELMD", "NEO", "OREX", "THOR", "CMN", "ENMD", "CPRX", "KND", "NKTR", "WMGI", "BEAT", "ALKS", "DEPO", "NEOG", "ICPT", "ELN", "PTIE", "SNY", "ALGN", "CNDO", "LMAT", "CNMD", "STXS", "EXEL", "SGMO", "HITK", "ILMN", "AMRI", "AGEN", "HWAY", "BVX", "SIGA", "BDX", "CASM", "CHE", "BSX", "STAA", "AXGN", "CYNO", "GMED", "ATHX", "LPNT", "IRIX", "ACRX", "DSCI", "ZMH", "PODD", "SKBI", "CNC", "ATRI", "BGMD", "DRTX", "ICLR", "PETS", "TEVA", "BDSI", "ARIA", "AXDX", "SCR", "NBY", "TROV", "AHPI", "LAKE", "TGX", "DYAX", "MSA", "MR", "SYK", "DRRX", "IDRA", "CVD", "ADHD", "RGLS", "NHC", "SSY", "CRME", "RPTP", "CRMD", "CLVS", "PRTA", "BIND", "CERS", "SNTA", "PSDV", "DCTH", "HIIQ", "HLS", "CYH", "KYTH", "EDAP", "AMPE", "MASI", "GIVN", "PHMD", "DVCR", "CYTK", "GWPH", "NSPH", "UHS", "ELGX", "ATEC", "MDXG", "MD", "ANIP", "ORMP", "DVAX", "NVGN", "SGYP", "NLTX", "PTX", "AMAG", "SGNT", "ARRY", "ABMC", "MGNX", "BLUE", "MNOV", "OSUR", "OXGN", "OPXA", "SLTM", "ETRM", "TTHI", "CYAN", "GERN", "HNT", "PDLI", "TPI", "ECTE", "NSTG", "MDCI", "TTPH", "GB", "SUPN", "TRIB", "INO", "ERB", "CAPS", "EPZM", "DRAD", "RTIX", "SLXP", "AUXL", "AGN", "ACHC", "PACB", "SPNC", "OPK", "PFE", "AGIO", "BTX", "PKI", "HH", "INFU", "XON", "BMY", "IRWD", "KERX", "OPHT", "SNTS", "ARNA", "WAT", "RDNT", "IMGN", "VVUS", "NLNK", "SEM", "DARA", "TSRO", "CYTX", "BIIB", "AXN", "PATH", "QLTI", "MOH", "OSIR", "AZN", "HCA", "CUR", "TECH", "ENZY", "NPSP", "EXAS", "GTXI", "CSU", "EVHC", "AIQ", "ALNY", "ACST", "HRC", "HBIO", "BSTC", "DVA", "APT", "LDRH", "VRNM", "VRTX", "COO", "LHCG", "INFI", "MACK", "MRK", "PRXL", "ENSG", "ESC", "RIGL", "VICL", "LIFE", "CGEN", "AHS", "PLX", "OGEN", "ATRS", "AMS", "CXM", "BIOL", "HEB", "CYTR", "MDRX", "ECYT", "ATRC", "NVAX", "MNTA", "ZLCS", "KIPS", "GTIV", "OGXI", "PTN", "VAR", "ACAD", "AEGR", "CLDX", "LH", "VPHM", "THC", "SQNM", "DHRM", "CPIX", "EVOK", "NWBO", "LMNX", "AVEO", "GALE", "IBIO", "OXBT", "ONTX", "WX", "NNVC", "PSTI", "XNPT", "AMGN", "ROSG", "IMUC", "CDXS", "LCAV", "MMSI", "ARQL", "SURG", "CVM", "IDIX", "GEVA", "CORT", "ARTC", "OCLS", "KBIO", "ICUI", "ABT", "CSII", "ZIOP", "NSPR", "CBRX", "RVP", "PCRX", "LPDX", "FRX", "ICCC", "A", "PRSC", "TRNX", "UPI", "ISIS", "ESRX", "SCLN", "EBS", "CTIC", "IPCI", "MSTX", "CRIS", "OMED", "TEAR", "USNA", "ADXS", "CBLI", "MAKO", "XLRN", "MDT", "BMRN", "MNKD", "MYL", "THRX", "NATR", "ESMC", "SMA", "ABBV", "RCPT", "CADX", "COV" ] }
+{ "_id" : "Basic Materials", "stocks" : [ "EMXX", "OMG", "REGI", "CHK", "SD", "REX", "SZYM", "BHP", "PEIX", "DNR", "GSV", "AHGP", "CDE", "XTEX", "GEVO", "APA", "GDP", "GTU", "IPI", "SSRI", "NG", "PKD", "ATW", "CNX", "EPB", "USAC", "VET", "SGY", "GURE", "QRE", "VTG", "AUMN", "PGRX", "WHZ", "EXXI", "EROC", "AMCF", "JRCC", "SCEI", "EGN", "TPLM", "RIOM", "GMET", "RRC", "PAGP", "WGP", "USU", "PTR", "HUN", "RNO", "GLF", "CPE", "DK", "NFG", "SSLT", "LYB", "RIO", "NL", "SARA", "WLL", "DRD", "BRD", "CGG", "XTXI", "PGH", "SYNL", "PBR-A", "MPLX", "GSJK", "URG", "HES", "APD", "PHX", "PLG", "EPD", "GOLD", "ROYL", "GST", "APAGF", "SYNM", "SHW", "URRE", "MDR", "MVO", "NRP", "GRA", "BBEP", "MBLX", "NUE", "CGA", "TAS", "GBR", "KMI", "TDW", "VGZ", "PES", "DD", "NBL", "AUQ", "SFY", "AG", "HSC", "BAS", "MHR", "BCPC", "FTI", "KOS", "NDRO", "WDFC", "YONG", "NEU", "REE", "MMP", "MT", "TRGP", "STO", "CVX", "CF", "JONE", "SWN", "SID", "HFC", "HUSA", "LINE", "OILT", "LSG", "PZG", "GSS", "PDS", "FISH", "IAG", "ISRL", "PBT", "WES", "KGC", "CIE", "AZC", "CLD", "ACI", "E", "ORIG", "ARSD", "SIM", "WMB", "AXLL", "AXX", "BTE", "HMY", "LNDC", "FGP", "LXU", "MTDR", "SAND", "MPET", "SDR", "ENB", "DVN", "PSE", "GSI", "CAK", "PAA", "AREX", "MCP", "MTRN", "PX", "HERO", "RES", "TC", "KRA", "NGD", "EC", "FES", "TLLP", "WLT", "GEL", "AVL", "SXT", "APFC", "EQM", "HBM", "REN", "EXK", "APL", "MUR", "MUX", "EGI", "ZN", "ALJ", "PBA", "KBX", "PDCE", "SBGL", "SQM", "TGD", "PACD", "DBLE", "CMLP", "SEMG", "CPSL", "AXAS", "NS", "NBR", "OLN", "PAL", "RGP", "COP", "DEJ", "MTX", "TGA", "PSXP", "TRQ", "BIOF", "KALU", "SPN", "PVR", "HWKN", "ARP", "CEP", "FRD", "ANR", "LGP", "SA", "TAM", "FUL", "ODC", "SSN", "EMES", "SM", "TCP", "TGC", "AUY", "USEG", "KMG", "GFI", "UNT", "PBR", "EPL", "CE",
+"ESTE", "HCLP", "APC", "KMR", "CWEI", "COG", "CAM", "CRK", "PENX", "USAP", "HGT", "CHOP", "VAL", "TCK", "IFNY", "ACET", "BCEI", "TLM", "TLR", "TGE", "X", "TOT", "CHNR", "EEQ", "XOM", "EOG", "MEIL", "RIC", "TLP", "HNRG", "SCOK", "PURE", "URZ", "YZC", "CERP", "BKEP", "FF", "XRA", "SJT", "FMC", "SYT", "WH", "RNF", "ERF", "WG", "NEM", "AAV", "MDM", "KWK", "ANV", "SGU", "TNH", "SU", "SN", "VALE", "SEP", "WNRL", "NSLP", "YPF", "FCX", "AA", "SIAL", "BXE", "CLF", "DRQ", "NGLS", "TORM", "SWC", "VNR", "LLEN", "RRMS", "ACH", "AEM", "CBT", "GORO", "MCF", "FSM", "MDW", "MEOH", "RIG", "RTK", "RPM", "ARG", "SOQ", "CVI", "MPC", "FST", "DO", "PQ", "SVLC", "WLB", "PPP", "POL", "XCO", "NE", "LNG", "IOC", "UGP", "CJES", "PZE", "CQP", "CRT", "EVEP", "NR", "GMO", "PSTR", "ALB", "CHKR", "SDRL", "SSL", "MVG", "WLK", "CVE", "ARLP", "WRES", "BVN", "DNN", "DWSN", "AE", "BAA", "FPP", "KRO", "HAL", "TAT", "CLMT", "SNP", "MTL", "TROX", "EPM", "RGLD", "ECA", "ACMP", "ASM", "BPT", "KOG", "SLCA", "GNI", "UAMY", "WFT", "EQU", "ZAZA", "SYRG", "SHI", "BP", "BBL", "QEP", "OXF", "FOE", "MBII", "PBM", "FANG", "QMM", "UEC", "NGS", "ETE", "ROYT", "PAAS", "MPO", "HL", "AVD", "EGO", "CMP", "NOV", "ALDW", "NTI", "OII", "RVM", "LIWA", "RBY", "TSO", "AKG", "ETP", "MRO", "CYT", "MGN", "BPL", "PBF", "SXCP", "AAU", "BIOA", "PWE", "MWE", "GPRE", "GSE", "CLB", "LGCY", "STLD", "CENX", "NCQ", "WHX", "PED", "DPM", "CLR", "EXH", "MXC", "ABX", "CGR", "GGB", "NGL", "BAK", "DOW", "XPL", "NOR", "ECT", "CDY", "MOS", "PDO", "IOSP", "SHLM", "HNR", "RDS-B", "FTK", "SVBL", "HP", "OIS", "VHI", "SLW", "MACE", "SMG", "IPHS", "CRR", "BHI", "EGY", "AKS", "KWR", "FSI", "UAN", "CVRR", "THM", "NOA", "UPL", "GGS", "ROCK", "FXEN", "BTU", "BBG", "EEP", "MON", "OXY", "AGU", "SXL", "VLO", "WNR", "AXU", "END",
+"TRX", "LNCO", "SE", "AGI", "TGB", "ATL", "CEO", "LRE", "PPG", "GTE", "QRM", "LEI", "TAHO", "AR", "LTBR", "GPOR", "HDY", "MGH", "PXD", "GPL", "POT", "AWC", "PSX", "HEP", "MMLP", "PLM", "REXX", "SXC", "BPZ", "CMC", "TX", "BOLT", "LPI", "GSM", "XEC", "HK", "BWP", "WPX", "GNE", "SVM", "CCJ", "TTI", "PNRG", "ANW", "SDT", "NAK", "NWPX", "CNQ", "OCIP", "LODE", "PDH", "TEP", "NSH", "FI", "REI", "HOS", "SLB", "NOG", "QEPM", "CEQP", "DDC", "KMP", "FET", "EXLP", "NFX", "INT", "KIOR", "DVR", "KOP", "OAS", "SRLP", "KGJI", "CERE", "NSU", "RCON", "SDLP", "BRN", "AMRS", "FNV", "IVAN", "GG", "CHMT", "HLX", "RECV", "ASH", "VOC", "PER", "ROC", "SYMX", "ZINC", "SCCO", "KEG", "OKS", "DKL", "OCIR", "PKX", "IKNX", "OMN", "PTEN", "OSN", "ESV", "BRY", "IFF", "EOX", "CXO", "IIIN", "CHGS", "WPZ", "PVG", "IMO", "MILL", "ACO", "EMN", "TESO", "ATHL", "PVA", "ROSE", "MNGA", "MIL", "SNMX", "MCEP", "AU", "MEMP", "WTI", "CRZO", "SUTR", "RDC" ] }
+```
 
 
 ## Exercício 4 – Fraude na Enron! 
