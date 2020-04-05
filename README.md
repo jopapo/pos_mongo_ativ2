@@ -542,5 +542,36 @@ $ docker exec -it pos_mongo_ativ2_mongo-server_1 //bin//sh
 
 ## Exercício 4 – Fraude na Enron! 
 
+Não comitei o arquivo da enron [(link)](https://dl.dropbox.com/s/nfnvx6pggmvw5vt/enron.zip) junto pois é público e é meio grandinho. Mas importei no mongo usando o comando _mongorestore_.
+
 1. Liste as pessoas que enviaram e-mails (de forma distinta, ou seja, sem repetir). Quantas pessoas são? 
+```
+> db.messages.aggregate([{$group:{_id:'$headers.From',count:{$sum:1}}},{$sort:{count:-1}}])
+{ "_id" : "matthew.lenhart@enron.com", "count" : 2027 }
+{ "_id" : "debra.perlingiere@enron.com", "count" : 1927 }
+{ "_id" : "tana.jones@enron.com", "count" : 1916 }
+{ "_id" : "phillip.love@enron.com", "count" : 1470 }
+{ "_id" : "gerald.nemec@enron.com", "count" : 1294 }
+{ "_id" : "elizabeth.sager@enron.com", "count" : 1042 }
+{ "_id" : "richard.sanders@enron.com", "count" : 1012 }
+{ "_id" : "darron.giron@enron.com", "count" : 1011 }
+{ "_id" : "sally.beck@enron.com", "count" : 1004 }
+{ "_id" : "susan.mara@enron.com", "count" : 982 }
+{ "_id" : "chris.germany@enron.com", "count" : 954 }
+{ "_id" : "dan.hyvl@enron.com", "count" : 862 }
+{ "_id" : "drew.fossum@enron.com", "count" : 851 }
+{ "_id" : "mike.mcconnell@enron.com", "count" : 809 }
+{ "_id" : "james.steffes@enron.com", "count" : 771 }
+{ "_id" : "carol.clair@enron.com", "count" : 733 }
+{ "_id" : "robin.rodrigue@enron.com", "count" : 721 }
+{ "_id" : "exchangeinfo@nymex.com", "count" : 720 }
+{ "_id" : "soblander@carrfut.com", "count" : 688 }
+{ "_id" : "stanley.horton@enron.com", "count" : 686 }
+...
+```
+
 2. Contabilize quantos e-mails tem a palavra “fraud”
+```
+> db.messages.find({body:{$regex:/fraud/}}).count()
+298
+```
